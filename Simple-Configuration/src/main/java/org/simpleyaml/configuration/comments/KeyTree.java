@@ -23,7 +23,7 @@ public class KeyTree {
         KeyTree.Node parent = this.root;
         String key = path;
         if (path != null) {
-            final int i = path.lastIndexOf('.');
+            final int i = path.lastIndexOf(options.pathSeparator());
             if (i >= 0) {
                 final String parentPath = path.substring(0, i);
                 key = path.substring(i + 1);
