@@ -1,6 +1,7 @@
 package org.simpleyaml.configuration.file;
 
 import org.simpleyaml.utils.Validate;
+import org.yaml.snakeyaml.DumperOptions;
 
 import java.util.Objects;
 
@@ -13,6 +14,9 @@ import java.util.Objects;
 public class YamlConfigurationOptions extends FileConfigurationOptions {
 
     private int indent = 2;
+    private int width = 512;
+    private DumperOptions.FlowStyle flowStyle;
+    private DumperOptions.ScalarStyle scalarStyle;
 
     protected YamlConfigurationOptions(final YamlConfiguration configuration) {
         super(configuration);
@@ -69,4 +73,32 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
     public int hashCode() {
         return Objects.hash(super.hashCode(), indent);
     }
+
+    public int width() {
+        return width;
+    }
+
+    public YamlConfigurationOptions width(int width) {
+        this.width = width;
+        return this;
+    }
+
+    public DumperOptions.FlowStyle flowStyle() {
+        return flowStyle == null ? DumperOptions.FlowStyle.BLOCK : flowStyle;
+    }
+
+    public YamlConfigurationOptions flowStyle(DumperOptions.FlowStyle flowStyle) {
+        this.flowStyle = flowStyle;
+        return this;
+    }
+
+    public DumperOptions.ScalarStyle scalarStyle() {
+        return scalarStyle == null ? DumperOptions.ScalarStyle.PLAIN : scalarStyle;
+    }
+
+    public YamlConfigurationOptions scalarStyle(DumperOptions.ScalarStyle scalarStyle) {
+        this.scalarStyle = scalarStyle;
+        return this;
+    }
+
 }

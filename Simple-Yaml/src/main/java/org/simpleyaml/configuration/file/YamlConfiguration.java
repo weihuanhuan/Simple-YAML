@@ -100,8 +100,14 @@ public class YamlConfiguration extends FileConfiguration {
         this.yamlOptions.setIndent(this.options().indent());
         this.yamlOptions.setIndicatorIndent(this.options().indent());
         this.yamlOptions.setAllowUnicode(this.options().isUnicode());
-        this.yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        this.yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        this.yamlOptions.setWidth(this.options().width());
+
+        this.yamlOptions.setDefaultFlowStyle(this.options().flowStyle());
+        this.yamlOptions.setDefaultScalarStyle(this.options().scalarStyle());
+
+        this.yamlRepresenter.setDefaultFlowStyle(this.options().flowStyle());
+        this.yamlRepresenter.setDefaultScalarStyle(this.options().scalarStyle());
 
         String dump = this.yaml.dump(this.getValues(false));
 
