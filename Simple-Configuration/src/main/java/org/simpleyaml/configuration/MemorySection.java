@@ -172,7 +172,7 @@ public class MemorySection implements ConfigurationSection {
                 }
                 return new AbstractMap.SimpleEntry<>(key, value);
             })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
     }
 
     @Override
