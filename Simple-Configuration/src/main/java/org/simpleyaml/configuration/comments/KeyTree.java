@@ -19,6 +19,10 @@ public class KeyTree {
         this.options = options;
     }
 
+    public char getPathSeparator() {
+        return options.pathSeparator();
+    }
+
     public KeyTree.Node add(final String path) {
         KeyTree.Node parent = this.root;
         String key = path;

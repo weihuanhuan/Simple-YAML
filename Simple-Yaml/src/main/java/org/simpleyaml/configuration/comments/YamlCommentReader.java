@@ -14,6 +14,9 @@ public class YamlCommentReader extends YamlCommentMapper {
 
     private static final Pattern KEY_REGEX = Pattern.compile("^([ \\t-]*)([^#]*?)[ \\t]*:.*");
 
+    private static final Pattern KEY_MULTI_COLON = Pattern.compile("(.*?:)+(.*?:)");
+    private static final Pattern KEY_REGEX_QUOTE = Pattern.compile("^([ \\t-]*)([^#]*)[ \\t]*:.*");
+
     private static final Pattern ELEMENT_REGEX = Pattern.compile("^([ \\t-]*)([^#\\n]*[^#\\s-]+).*");
 
     private static final Pattern OTHER_REGEX = Pattern.compile("^([ \\t-]*).*");
@@ -62,6 +65,13 @@ public class YamlCommentReader extends YamlCommentMapper {
     }
 
     private MatchResult match(final String s) {
+        if (YamlCommentReader.KEY_REGEX.matcher(s).matches() && YamlCommentReader.KEY_MULTI_COLON.matcher(s).matches()) {
+            Matcher matcher = YamlCommentReader.KEY_REGEX_QUOTE.matcher(s); // for comments of section keys
+            if (matcher.matches()) {
+                return matcher.toMatchResult();
+            }
+        }
+
         Matcher matcher = YamlCommentReader.KEY_REGEX.matcher(s); // for comments of section keys
         if (matcher.matches()) {
             return matcher.toMatchResult();

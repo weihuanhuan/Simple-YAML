@@ -34,7 +34,10 @@ public class YamlCommentDumper extends YamlCommentReader {
         while (this.nextLine()) {
             if (!this.isComment()) { // Avoid duplicating header
                 final String path = this.track().getPath();
-                final KeyTree.Node node = this.getNode(path);
+                KeyTree.Node node = this.getNode(path);
+                if (node == null) {
+                    node = tryQuotedPath(path);
+                }
                 this.append(node, KeyTree.Node::getComment);
                 this.builder.append(this.currentLine);
                 this.append(node, KeyTree.Node::getSideComment);
@@ -48,6 +51,43 @@ public class YamlCommentDumper extends YamlCommentReader {
         this.reader.close();
 
         return this.builder.toString();
+    }
+
+    private KeyTree.Node tryQuotedPath(String path) {
+        KeyTree.Node node = null;
+
+        String quotedPath = getQuotedPath(path, "\"");
+        if (quotedPath != null) {
+            node = this.getNode(quotedPath);
+        }
+
+        if (node == null) {
+            quotedPath = getQuotedPath(path, "'");
+        }
+        if (quotedPath != null) {
+            node = this.getNode(quotedPath);
+        }
+        return node;
+    }
+
+    private String getQuotedPath(String path, String quote) {
+        if (path == null) {
+            return null;
+        }
+
+        char pathSeparator = this.keyTree.getPathSeparator();
+        int i = path.indexOf(pathSeparator);
+        if (i < 0 || i >= path.length() - 1) {
+            return null;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(path, 0, i);
+        stringBuilder.append(path.charAt(i));
+        stringBuilder.append(quote);
+        stringBuilder.append(path.substring(i + 1));
+        stringBuilder.append(quote);
+        return stringBuilder.toString();
     }
 
     @Override
