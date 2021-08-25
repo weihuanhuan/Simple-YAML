@@ -54,17 +54,14 @@ public class YamlCommentDumper extends YamlCommentReader {
     }
 
     private KeyTree.Node tryQuotedPath(String path) {
+        String quotedPath;
         KeyTree.Node node = null;
 
-        String quotedPath = getQuotedPath(path, "\"");
-        if (quotedPath != null) {
+        if (node == null && (quotedPath = getQuotedPath(path, "\"")) != null) {
             node = this.getNode(quotedPath);
         }
 
-        if (node == null) {
-            quotedPath = getQuotedPath(path, "'");
-        }
-        if (quotedPath != null) {
+        if (node == null && (quotedPath = getQuotedPath(path, "'")) != null) {
             node = this.getNode(quotedPath);
         }
         return node;
@@ -81,13 +78,27 @@ public class YamlCommentDumper extends YamlCommentReader {
             return null;
         }
 
+        String rawKey = getLastRawKey(path, i);
+
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(path, 0, i);
         stringBuilder.append(path.charAt(i));
         stringBuilder.append(quote);
-        stringBuilder.append(path.substring(i + 1));
+        stringBuilder.append(rawKey);
         stringBuilder.append(quote);
         return stringBuilder.toString();
+    }
+
+    private String getLastRawKey(String path, int i) {
+        int startIndex = i + 1;
+        int endIndex = path.length() - 1;
+        if (path.charAt(startIndex) == path.charAt(endIndex)
+                && startIndex + 1 < endIndex
+                && (path.charAt(endIndex) == '\'' || path.charAt(endIndex) == '"')) {
+            return path.substring(startIndex + 1, endIndex);
+        }
+
+        return path.substring(startIndex);
     }
 
     @Override
