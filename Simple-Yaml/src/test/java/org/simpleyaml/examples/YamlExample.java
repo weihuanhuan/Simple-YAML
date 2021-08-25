@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -93,7 +96,10 @@ public final class YamlExample {
 
         // We can iterate over sections with getKeys(deep) and getValues(deep) methods
 
-        section.getValues(false).entrySet().forEach(System.out::println); // false is not recursive
+        Set<Map.Entry<String, Object>> entries = section.getValues(false).entrySet();// false is not recursive
+        for (Map.Entry<String, Object> entry : entries) {
+            System.out.println(entry);
+        }
 
         // You can use many methods to obtain some types without casting (String, int, double...)
 

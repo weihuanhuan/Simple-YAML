@@ -1,8 +1,9 @@
 package org.simpleyaml.configuration.comments;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
@@ -184,10 +185,21 @@ final class YamlKeyTreeTest {
         );
         MatcherAssert.assertThat(
             "The node's key are not correct!",
-            entries.stream().map(Map.Entry::getKey)
-                .collect(Collectors.toList()),
+                getKeys(entries),
             new HasValues<>("nodekey1", "nodekey2", "nodekey3")
         );
+    }
+
+    private List<String> getKeys(Set<Map.Entry<String, KeyTree.Node>> entries){
+        List<String> keys = new ArrayList<>();
+        if(entries==null){
+            return keys;
+        }
+
+        for (Map.Entry<String, KeyTree.Node> entry : entries) {
+            keys.add(entry.getKey());
+        }
+        return keys;
     }
 
     @Test

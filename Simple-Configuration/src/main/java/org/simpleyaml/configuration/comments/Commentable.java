@@ -21,9 +21,7 @@ public interface Commentable {
      * @param path    path of desired section or value
      * @param comment the comment to add, # symbol is not needed
      */
-    default void setComment(final String path, final String comment) {
-        this.setComment(path, comment, CommentType.BLOCK);
-    }
+    void setComment(final String path, final String comment);
 
     /**
      * Retrieve the comment of the section or value selected by path.
@@ -42,8 +40,6 @@ public interface Commentable {
      * @return the block comment of the section or value selected by path,
      * or null if that path does not have any comment of type block
      */
-    default String getComment(final String path) {
-        return this.getComment(path, CommentType.BLOCK);
-    }
+    String getComment(final String path);
 
 }

@@ -488,9 +488,12 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public static YamlFile loadConfiguration(final File file, boolean withComments) {
         Validate.notNull(file, "File cannot be null");
-        return load(config -> {
-            config.setConfigurationFile(file);
-            config.load();
+        return load(new YamlFileLoader() {
+            @Override
+            public void load(YamlFile config) throws IOException, InvalidConfigurationException {
+                config.setConfigurationFile(file);
+                config.load();
+            }
         }, withComments);
     }
 
@@ -530,7 +533,12 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public static YamlFile loadConfiguration(final InputStream stream, boolean withComments) {
         Validate.notNull(stream, "Stream cannot be null");
-        return load(config -> config.load(stream), withComments);
+        return load(new YamlFileLoader() {
+            @Override
+            public void load(YamlFile config) throws IOException, InvalidConfigurationException {
+                config.load(stream);
+            }
+        }, withComments);
     }
 
     /**
@@ -566,7 +574,12 @@ public class YamlFile extends YamlConfiguration implements Commentable {
      */
     public static YamlFile loadConfiguration(final Reader reader, boolean withComments) {
         Validate.notNull(reader, "Reader cannot be null");
-        return load(config -> config.load(reader), withComments);
+        return load(new YamlFileLoader() {
+            @Override
+            public void load(YamlFile config) throws IOException, InvalidConfigurationException {
+                config.load(reader);
+            }
+        }, withComments);
     }
 
     /**
@@ -603,4 +616,15 @@ public class YamlFile extends YamlConfiguration implements Commentable {
         void load(YamlFile config) throws IOException, InvalidConfigurationException;
 
     }
+
+    @Override
+    public void setComment(final String path, final String comment) {
+        this.setComment(path, comment, CommentType.BLOCK);
+    }
+
+    @Override
+    public String getComment(final String path) {
+        return this.getComment(path, CommentType.BLOCK);
+    }
+
 }

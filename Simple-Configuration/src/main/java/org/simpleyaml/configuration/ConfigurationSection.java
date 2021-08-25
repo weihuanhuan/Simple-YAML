@@ -190,9 +190,7 @@ public interface ConfigurationSection {
      *
      * @param path Path of the object to remove.
      */
-    default void remove(final String path) {
-        this.set(path, null);
-    }
+    void remove(final String path);
 
     /**
      * Creates an empty {@link ConfigurationSection} at the specified path.

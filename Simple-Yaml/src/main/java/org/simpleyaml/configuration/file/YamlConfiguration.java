@@ -51,7 +51,12 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final File file) {
         Validate.notNull(file, "File cannot be null");
-        return YamlConfiguration.load(config -> config.load(file));
+        return YamlConfiguration.load(new YamlConfigurationLoader() {
+            @Override
+            public void load(YamlConfiguration config) throws IOException, InvalidConfigurationException {
+                config.load(file);
+            }
+        });
     }
 
     /**
@@ -72,7 +77,12 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final InputStream stream) {
         Validate.notNull(stream, "Stream cannot be null");
-        return YamlConfiguration.load(config -> config.load(stream));
+        return YamlConfiguration.load(new YamlConfigurationLoader() {
+            @Override
+            public void load(YamlConfiguration config) throws IOException, InvalidConfigurationException {
+                config.load(stream);
+            }
+        });
     }
 
     /**
@@ -88,7 +98,12 @@ public class YamlConfiguration extends FileConfiguration {
      */
     public static YamlConfiguration loadConfiguration(final Reader reader) {
         Validate.notNull(reader, "Reader cannot be null");
-        return YamlConfiguration.load(config -> config.load(reader));
+        return YamlConfiguration.load(new YamlConfigurationLoader() {
+            @Override
+            public void load(YamlConfiguration config) throws IOException, InvalidConfigurationException {
+                config.load(reader);
+            }
+        });
     }
 
     @Override

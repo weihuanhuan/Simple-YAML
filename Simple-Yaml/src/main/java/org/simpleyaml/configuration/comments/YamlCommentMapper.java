@@ -76,4 +76,15 @@ public class YamlCommentMapper implements Commentable {
         return builder.toString();
     }
 
+    @Override
+    public void setComment(final String path, final String comment) {
+        this.setComment(path, comment, CommentType.BLOCK);
+    }
+
+    @Override
+    public String getComment(final String path) {
+        return this.getComment(path, CommentType.BLOCK);
+    }
+
+
 }

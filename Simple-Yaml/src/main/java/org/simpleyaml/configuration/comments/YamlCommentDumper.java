@@ -4,8 +4,6 @@ import org.simpleyaml.configuration.file.YamlConfigurationOptions;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class YamlCommentDumper extends YamlCommentReader {
 
@@ -18,6 +16,20 @@ public class YamlCommentDumper extends YamlCommentReader {
         this.yamlCommentMapper = yamlCommentMapper;
     }
 
+    private String joiningLines() throws IOException {
+        String line;
+        StringBuilder stringBuilder = new StringBuilder();
+        if (reader == null) {
+            return stringBuilder.toString();
+        }
+
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
     /**
      * Merge comments from the comment mapper with lines from the reader.
      *
@@ -26,7 +38,7 @@ public class YamlCommentDumper extends YamlCommentReader {
      */
     public String dump() throws IOException {
         if (this.yamlCommentMapper == null) {
-            return this.reader.lines().collect(Collectors.joining("\n"));
+            return joiningLines();
         }
 
         this.builder = new StringBuilder();
@@ -38,15 +50,15 @@ public class YamlCommentDumper extends YamlCommentReader {
                 if (node == null) {
                     node = tryQuotedPath(path);
                 }
-                this.append(node, KeyTree.Node::getComment);
+                this.append(node, CommentSupplier.INSTANCE);
                 this.builder.append(this.currentLine);
-                this.append(node, KeyTree.Node::getSideComment);
+                this.append(node, SideCommentSupplier.INSTANCE);
                 this.builder.append('\n');
             }
         }
 
         // Append end of file comment (null path), if found
-        this.append(this.getNode(null), KeyTree.Node::getComment);
+        this.append(this.getNode(null), CommentSupplier.INSTANCE);
 
         this.reader.close();
 
@@ -106,12 +118,38 @@ public class YamlCommentDumper extends YamlCommentReader {
         return this.yamlCommentMapper.getNode(path);
     }
 
-    private void append(final KeyTree.Node node, final Function<KeyTree.Node, String> getter) {
-        if (node != null) {
-            final String s = getter.apply(node);
+    private void append(final KeyTree.Node node, final Supplier supplier) {
+        if (node != null && supplier != null) {
+            final String s = supplier.apply(node);
             if (s != null) {
                 this.builder.append(s);
             }
+        }
+    }
+
+    private interface Supplier {
+
+        String apply(KeyTree.Node node);
+
+    }
+
+    private static class CommentSupplier implements Supplier {
+
+        private static final Supplier INSTANCE = new CommentSupplier();
+
+        @Override
+        public String apply(KeyTree.Node node) {
+            return node == null ? null : node.getComment();
+        }
+    }
+
+    private static class SideCommentSupplier implements Supplier {
+
+        private static final Supplier INSTANCE = new SideCommentSupplier();
+
+        @Override
+        public String apply(KeyTree.Node node) {
+            return node == null ? null : node.getSideComment();
         }
     }
 

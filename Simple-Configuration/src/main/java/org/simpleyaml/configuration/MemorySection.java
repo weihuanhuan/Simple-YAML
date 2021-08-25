@@ -1,6 +1,5 @@
 package org.simpleyaml.configuration;
 
-import java.util.stream.Collectors;
 import org.simpleyaml.utils.NumberConversions;
 import org.simpleyaml.utils.Validate;
 
@@ -163,16 +162,23 @@ public class MemorySection implements ConfigurationSection {
 
     @Override
     public Map<String, Object> getMapValues(final boolean deep) {
-        return this.getValues(deep).entrySet().stream()
-            .map(entry -> {
-                final String key = entry.getKey();
-                final Object value = entry.getValue();
-                if (value instanceof ConfigurationSection) {
-                    return new AbstractMap.SimpleEntry<>(key, ((ConfigurationSection) value).getMapValues(deep));
-                }
-                return new AbstractMap.SimpleEntry<>(key, value);
-            })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+        Map<String, Object> values = this.getValues(deep);
+        Map<String, Object> result = new LinkedHashMap<>();
+        if (values == null) {
+            return result;
+        }
+
+        Set<Map.Entry<String, Object>> entries = values.entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            final String key = entry.getKey();
+            final Object value = entry.getValue();
+            if (value instanceof ConfigurationSection) {
+                result.put(key, ((ConfigurationSection) value).getMapValues(deep));
+            } else {
+                result.put(key, value);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -814,4 +820,8 @@ public class MemorySection implements ConfigurationSection {
         }
     }
 
+    @Override
+    public void remove(String path) {
+        this.set(path, null);
+    }
 }
